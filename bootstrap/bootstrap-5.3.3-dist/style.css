@@ -1,0 +1,43 @@
+/* Global Smooth Scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Offset content for fixed navbar */
+body {
+  padding-top: 40px; /* Adjust if needed based on navbar height */
+}
+
+/* Navbar Brand Image */
+.navbar-brand img {
+  max-height: 40px;
+}
+
+/* Push navbar links a bit further right */
+.navbar-nav {
+  margin-right: 20px;
+}
+
+/* Hero Section - ensure content sits above any background */
+#hero .container {
+  position: relative;
+  z-index: 2;
+}
+
+/* Portfolio Card Hover Effect */
+.card {
+  border: none;
+  border-radius: 0;
+  transition: transform 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+}
+
+/* Footer Icon Hover Effect */
+footer a:hover {
+  color: #ccc;
+}
+
+/* Additional customizations can be added here */

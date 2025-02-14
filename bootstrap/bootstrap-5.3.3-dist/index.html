@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>My Website</title>
+  <!-- Bootstrap CSS -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+  <!-- Font Awesome (for social icons) -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+  />
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Navigation Bar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm fixed-top">
+    <div class="container">
+      <a class="navbar-brand" href="#">
+        <img src="big flex.jpg" alt="Logo" style="height: 40px" />
+        MeStrong
+      </a>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarNav"
+        aria-controls="navbarNav"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item me-3">
+            <a class="nav-link" href="#hero">Home</a>
+          </li>
+          <li class="nav-item me-3">
+            <a class="nav-link" href="#about">About</a>
+          </li>
+          <li class="nav-item me-3">
+            <a class="nav-link" href="#contact">Contact</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section
+    id="hero"
+    class="d-flex align-items-center justify-content-center text-center"
+    style="background-color: #000; color: #fff; height: 100vh; position: relative;"
+  >
+    <!--
+    <img
+      src="Hero.jpg"
+      alt="Hero Image"
+      class="img-fluid"
+      style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.5;"
+    />
+    -->
+    <div class="container position-relative">
+      <h1 class="display-4">Welcome to My Website</h1>
+      <p class="lead">Your short description goes here.</p>
+      <a href="#about" class="btn btn-primary btn-lg mt-3">Learn More</a>
+    </div>
+  </section>
+
+  <!-- About Me Section -->
+  <section id="about" class="py-5">
+    <div class="container">
+      <div class="row align-items-center">
+        <!-- Text Column -->
+        <div class="col-md-6 order-md-1">
+          <h2>About Me</h2>
+          <p>
+            Me 19 years old. 6 foot big, 195 pounds (pure muscle,) IQs of 20 or more on wendsdays.
+          </p>
+        </div>
+        <!-- Image Column -->
+        <div class="col-md-6 order-md-2">
+          <img
+            src="ogryn.webp"
+            alt="About Me"
+            class="img-fluid rounded"
+          />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Portfolio/Project Section -->
+  <section
+    id="portfolio"
+    class="py-5"
+    style="background-color: #222; color: #fff;"
+  >
+    <div class="container">
+      <h2 class="text-center mb-4">Portfolio</h2>
+      <div class="row">
+        <!-- Card 1 -->
+        <div class="col-md-4 mb-4">
+          <div class="card h-100">
+            <img
+              src="10 pound.png"
+              class="card-img-top"
+              alt="Project 1"
+            />
+            <div class="card-body">
+              <h5 class="card-title">baby plate</h5>
+              <p class="card-text">
+                Baby plate, I dont lift this its below me.
+              </p>
+              <a href="#" class="btn btn-outline-dark">View Project</a>
+            </div>
+          </div>
+        </div>
+        <!-- Card 2 -->
+        <div class="col-md-4 mb-4">
+          <div class="card h-100">
+            <img
+              src="45 pound plate.webp"
+              class="card-img-top"
+              alt="Project 2"
+            />
+            <div class="card-body">
+              <h5 class="card-title">big plate</h5>
+              <p class="card-text">
+                Best plate to exist.
+              </p>
+              <a href="#" class="btn btn-outline-dark">View Project</a>
+            </div>
+          </div>
+        </div>
+        <!-- Card 3 -->
+        <div class="col-md-4 mb-4">
+          <div class="card h-100">
+            <img
+              src="big lift.webp"
+              class="card-img-top"
+              alt="Project 3"
+            />
+            <div class="card-body">
+              <h5 class="card-title">Me lifting</h5>
+              <p class="card-text">
+                A casual lift I did at 3 in the morning.
+              </p>
+              <a href="#" class="btn btn-outline-dark">View Project</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Form Section -->
+  <section id="contact" class="py-5">
+    <div class="container">
+      <h2 class="text-center mb-4">Contact Me</h2>
+      <div class="row justify-content-center">
+        <div class="col-md-8">
+          <form id="contactForm">
+            <div class="mb-3">
+              <label for="name" class="form-label">Name</label>
+              <input
+                type="text"
+                class="form-control"
+                id="name"
+                placeholder="Your Name"
+              />
+            </div>
+            <div class="mb-3">
+              <label for="email" class="form-label">Email</label>
+              <input
+                type="email"
+                class="form-control"
+                id="email"
+                placeholder="name@example.com"
+              />
+            </div>
+            <div class="mb-3">
+              <label for="message" class="form-label">Message</label>
+              <textarea
+                class="form-control"
+                id="message"
+                rows="5"
+                placeholder="Your Message"
+              ></textarea>
+            </div>
+            <div class="d-grid">
+              <button type="submit" class="btn btn-primary btn-lg">
+                Submit
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer (Slightly Reduced Height) -->
+  <footer class="py-3 bg-dark text-light">
+    <div class="container text-center">
+      <p>© 2025 Your Name. All rights reserved.</p>
+      <div class="d-flex justify-content-center gap-3">
+        <a href="#" class="text-light"><i class="fab fa-instagram fa-lg"></i></a>
+        <a href="#" class="text-light"><i class="fab fa-twitter fa-lg"></i></a>
+        <a href="#" class="text-light"><i class="fab fa-linkedin fa-lg"></i></a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Thank You Modal -->
+  <div
+    class="modal fade"
+    id="thankYouModal"
+    tabindex="-1"
+    aria-labelledby="thankYouModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-body text-center">
+          <p>Thank you! I will get with you as soon as I can.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS (Bundle with Popper) -->
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+  ></script>
+
+  <!-- Custom JS for Contact Form Modal -->
+  <script>
+    document.getElementById('contactForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      var thankYouModal = new bootstrap.Modal(document.getElementById('thankYouModal'));
+      thankYouModal.show();
+      // Hide modal after 5 seconds (5000ms)
+      setTimeout(function() {
+        thankYouModal.hide();
+      }, 3000);
+    });
+  </script>
+</body>
+</html>
