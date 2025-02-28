@@ -1,16 +1,19 @@
 import random
+import time
+import threading
 import json
 import sys
-
-# Import hard mode dynamically
-try:
-    from hard_mode_script import hard_mode  # Assumes your hard mode game is in "hard_mode_script.py"
-except ImportError:
-    print("Hard mode script not found! Ensure 'hard_mode_script.py' is in the same directory.")
-    sys.exit(1)
+from inputimeout import inputimeout, TimeoutOccurred
 
 # High score file
-HIGH_SCORE_FILE = "highscores_easy.json"
+HIGH_SCORE_FILE = "highscores.json"
+
+# Global configuration
+DEFAULT_GUESS_TIME = 10  # Initial allowed seconds per guess
+MIN_GUESS_TIME = 3       # Minimum allowed time
+
+guess_count = 0          # Total number of guesses
+chase_failures = 0       # Number of failed chase challenges (affects timer)
 
 # Function to load high scores from a file
 def load_high_scores():
@@ -19,14 +22,14 @@ def load_high_scores():
         with open(HIGH_SCORE_FILE, "r") as f:
             return json.load(f)
     except (FileNotFoundError, json.JSONDecodeError):
-        return []  # Return an empty list if no scores exist
+        return []
 
 # Function to save high scores
 def save_high_score(name, score):
     """Saves the top 3 high scores to a file."""
     scores = load_high_scores()
     scores.append({"name": name, "score": score})
-    scores = sorted(scores, key=lambda x: x["score"])[:3]  # Keep only the top 3
+    scores = sorted(scores, key=lambda x: x["score"])[:3]
     with open(HIGH_SCORE_FILE, "w") as f:
         json.dump(scores, f, indent=4)
 
@@ -41,81 +44,117 @@ def display_high_scores():
         for i, entry in enumerate(scores, 1):
             print(f"{i}. {entry['name']} - {entry['score']} guesses")
 
-# Main game function
-def main():
-    player_name = input("Enter your name: ").strip()  # Ask for player's name
-    
-    # Prompt user to select difficulty level
-    while True:
+# Countdown timer for user input
+def countdown_timer(duration, stop_event):
+    """Prints a countdown separately while waiting for user input."""
+    remaining = duration
+    while remaining > 0 and not stop_event.is_set():
+        sys.stdout.write(f"\r\033[KTime left: {remaining} seconds\n")
+        sys.stdout.flush()
+        time.sleep(1)
+        remaining -= 1
+    sys.stdout.write("\r\033[K")
+
+# Get user input with a countdown timer
+def get_input_with_timer(prompt, timeout):
+    """Displays a countdown while waiting for user input."""
+    stop_event = threading.Event()
+    timer_thread = threading.Thread(target=countdown_timer, args=(timeout, stop_event))
+    timer_thread.daemon = True
+    timer_thread.start()
+    try:
+        user_input = inputimeout(prompt=f"\n{prompt}", timeout=timeout)
+    except TimeoutOccurred:
+        user_input = None
+    stop_event.set()
+    timer_thread.join()
+    print()
+    return user_input
+
+# Chase sequence minigame
+def chase_sequence():
+    """Handles the chase sequence. Player must type a code correctly within 5 seconds."""
+    challenge_str = ''.join(random.choices("0123456789", k=4))
+    allowed_time = 5
+    max_attempts = 2
+    print("\n--- CHASE SEQUENCE INITIATED! ---")
+    print(f"The number is almost caught! To secure it, type this code: {challenge_str}")
+
+    attempts = 0
+    while attempts < max_attempts:
         try:
-            dif = int(input("Select difficulty (1 for easy, 2 for medium, 3 for hard): "))
-            if dif in [1, 2, 3]:
+            entry = inputimeout(prompt="Enter the code: ", timeout=allowed_time)
+        except TimeoutOccurred:
+            entry = None
+
+        if entry == challenge_str:
+            print("You nailed the chase sequence and caught the number!")
+            return True
+        else:
+            attempts += 1
+            print("Incorrect code or too slow!")
+            if attempts < max_attempts:
+                print("Quick, try again!")
+    return False
+
+# Hard mode game logic
+def hard_mode():
+    global guess_count, chase_failures, DEFAULT_GUESS_TIME
+    
+    player_name = input("Enter your name: ").strip()
+    target_num = random.randint(1, 500)
+    print("THE NUMBER HAS ESCAPED!")
+    time.sleep(1)
+    print("GO FIND IT!...")
+    time.sleep(2)
+
+    guess_count = 0
+    chase_failures = 0
+
+    while True:
+        current_time = DEFAULT_GUESS_TIME - (guess_count // 5) - chase_failures
+        if current_time < MIN_GUESS_TIME:
+            current_time = MIN_GUESS_TIME
+
+        print(f"\nYou have {current_time} seconds for your next guess.")
+        user_input = get_input_with_timer("Enter your guess (1-500): ", current_time)
+
+        if user_input is None:
+            print("Time's up for that guess!")
+            guess_count += 1
+            continue
+
+        try:
+            guess = int(user_input)
+        except ValueError:
+            print("Invalid input! Please enter a valid number.")
+            guess_count += 1
+            continue
+
+        guess_count += 1
+
+        if abs(guess - target_num) <= 5:
+            print("You're extremely close!")
+            if chase_sequence():
+                print(f"Congratulations, {player_name}! You won in {guess_count} guesses!")
+                save_high_score(player_name, guess_count)
+                display_high_scores()
                 break
             else:
-                print("Invalid choice. Please enter 1, 2, or 3.")
-        except ValueError:
-            print("Invalid input! Please enter a number.")
-    
-    # If hard mode is selected, load the external hard mode game
-    if dif == 3:
-        print("\nLoading Hard Mode... Good Luck!")
-        hard_mode()  # Calls hard mode function from imported script
-        return
-    
-    # Generate a random number for the game
-    num = random.randint(1, 100)
-    print("(DEBUG: The number is", num, ")")  # Remove this for final version
-    score = 200 if dif == 1 else 100  # Set score based on difficulty
-    guess_count = 0  # Track number of guesses
-    
-    while score > 0:
-        guess = input("Take a guess! (between 1 and 100) or type 'stop' to quit: ").lower()
-        
-        # Allow player to quit the game
-        if guess == "stop":
-            print("Game Over!")
-            break
-        elif guess == "cheesewheel":  # Easter egg win condition
-            print("You win Egg-avier! 0 points!")
-            break
-        else:
-            try:
-                guess = int(guess)  # Convert input to integer
-            except ValueError:
-                print("Please enter a valid number or 'stop' to quit.")
+                print("You failed the chase sequence!")
+                chase_failures += 1
+                if chase_failures >= 2:
+                    print("You've failed twice in the chase. The number has moved!")
+                    target_num = random.randint(1, 500)
+                    chase_failures = 0
                 continue
-        
-        guess_count += 1  # Increment guess count
-        
-        # Check if the guess is correct
-        if guess == num:
-            print(f"Congratulations, {player_name}! You won!")
-            print("Your score is:", score)
-            save_high_score(player_name, guess_count)  # Save high score
-            display_high_scores()  # Show top 3 high scores
-            break
-        else:
-            print("Pssss, guess higher" if num > guess else "Pssss, guess lower")
-            score -= 20  # Deduct points for incorrect guesses
-            
-            # If the score reaches zero, prompt for restart
-            if score <= 0:
-                x = input("Game Over! Do you wish to restart? y/n: ")
-                if x.lower() == "y":
-                    main()
-                else:
-                    break
-            else:
-                print("Wrong guess! Current score is:", score)
-                
-                # Offer hints in easy mode
-                if dif == 1:
-                    awn = input("Want a mega hint? Type 'yes please!' or 'no thank you': ")
-                    if awn.lower() == "yes please!":
-                        print("The number is between", num - 5, "and", num + 7)
-                    elif awn.lower() == "no thank you":
-                        print("Okay, good luck!")
 
-# Run the game if the script is executed directly
+        elif abs(guess - target_num) <= 10:
+            print("You're close, but not quite there. Try again!")
+        elif guess < target_num:
+            print("Too low! Broaden your search area.")
+        else:
+            print("Too high! Try a lower range.")
+
 if __name__ == "__main__":
-    main()
+    hard_mode()
